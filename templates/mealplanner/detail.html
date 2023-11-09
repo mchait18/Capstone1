@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Meal Planner{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="display-2">Your 7-Day Meal Planner</h1>
+    <table class="table table-striped ">
+        <tbody>
+            {% for day in mpDays %}
+            <tr>
+                <td>{{day.name}}</td>
+                {% if day.recipes %}
+                <td>
+                    <div id="recipes-" {{day.name}}>
+                        {% for recipe in day.recipes%}
+                        <a href="/recipes/{{recipe.id}}" class="card-link">
+                            <img src="{{ recipe.image }}" alt="Image for {{recipe.title}}" class="card-image">
+                            <h6 class="link-secondary">{{ recipe.title }}</h6>
+                        </a>
+                        <div>
+                            <form method="POST" action="/mealplanner/{{recipe.id}}/remove">
+                                <input type="hidden" name="day-name" value={{day.name}}>
+                                <button class="btn-default">X Remove</button>
+                            </form>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% endblock %}

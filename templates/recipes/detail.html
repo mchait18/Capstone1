@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}{{recipe.title}}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-6 mb-4">
+        <div class="card border-0">
+            <h1 class="card-title display-5"><b>{{recipe.title}}</b></h1>
+            <h6 class="card-text display-7">Serves: {{recipe.servings}}</h6>
+            <h6 class="card-text display-7">Ready in: {{recipe.readyInMinutes}} Minutes</h6>
+            {% if recipe.id in favorites%}
+            <div class=" text-start mb-3">
+                <span class="display-7">Saved <i class="fa-solid fa-heart"></i></span>
+            </div>
+            {%else%}
+            <form method=" POST" action='/recipes/{{recipe.id}}/add'>
+                <button class="btn btn-sm btn-outline-secondary mb-3">Save Recipe</button>
+            </form>
+            {% endif%}
+
+            <img src="{{ recipe.image }}" alt="Image for {{recipe.title}}" class="mb-3 rounded card-image image-fluid">
+
+        </div>
+        <h4 class="display-7"><b>Ingredients:</b></h4>
+        <ul>
+            {% for ingredient in recipe.extendedIngredients %}
+            <li>{{ingredient.original}}</li>
+            {% endfor %}
+        </ul>
+        {% if recipe.instructions %}
+        <h4 class="display-7"><b>Directions:</b></h4>
+        <p>{{recipe.instructions | safe }}</p>
+        {% endif %}
+        <form action="/recipes">
+            <input type="hidden" name="q" value="{{ session['SEARCH_TERM'] }}">
+            <button class="btn btn-secondary btn-sm">Back to Search Results</button>
+        </form>
+    </div>
+    {% endblock %}

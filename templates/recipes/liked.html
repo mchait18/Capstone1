@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <h3 class="col-4 mb-4 display-5"><b>Your Recipe Box</b></h3>
+</div>
+{% if recipes %}
+<div class="row ">
+    {% for recipe in recipes %}
+    <div class="col-sm-7 col-md-5 col-lg-4  col-xl-3  ">
+        <div class="card border-0 mb-4">
+            <a href="/recipes/{{recipe.id}}">
+                <img src="{{ recipe.image }}" alt="Image for {{recipe.title}}"
+                    class="card-image-top img-fluid rounded"></a>
+            <a href="/recipes/{{recipe.id}}">
+                <h5 class="btn text-black text-start card-title" id=" recipe-title"><b>{{ recipe.title }}</b></h5>
+            </a>
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal"
+                data-bs-target="#Modal{{recipe.id}}">+ Add to Planner</button>
+            <!-- Modal -->
+            <div class="modal fade" id="Modal{{recipe.id}}" tabindex="-1" aria-labelledby="ModalLabel{{recipe.id}}"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="ModalLabel{{recipe.id}}">Day of the week to save recipe to:
+                            </h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="POST" action="/mealplanner/{{recipe.id}}/add">
+                                <select name="day" class="p-1 border rounded">
+                                    <option value="" disabled selected>Days of the Week</option>
+                                    <option value="Sunday">Sunday</option>
+                                    <option value="Monday">Monday</option>
+                                    <option value="Tuesday">Tuesday</option>
+                                    <option value="Wednesday">Wednesday</option>
+                                    <option value="Thursday">Thursday</option>
+                                    <option value="Friday">Friday</option>
+                                    <option value="Saturday">Saturday</option>
+                                </select>
+                                <button type="submit" class="btn btn-secondary btn-sm" class="add-button">Add to Weekly
+                                    Planner</button>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <a href="/recipes/{{recipe.id}}/remove" class="btn"><b>X Remove</b></a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="row">No recipes yet!</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="card border-0  mb-4" style="height: 25rem;">
+  <img src="https://cdn.pixabay.com/photo/2017/10/22/21/41/turmeric-2879382_1280.jpg" class="card-img img-fluid h-100 "
+    alt="image">
+  <div class="card-img-overlay">
+    <h5 class="card-title  display-3 text-center"><b>Meal Planning Made Easy</b></h5>
+    <div class="row">
+      <div class="col-2"></div>
+      <p class="card-text display-7 text-center col-8"><b>A magical new way to plan your meals.
+          Groundbreaking organizing features designed to save time,
+          customize your weekly meal plan based on your diet and eating habits.
+          Innovative meal planning in 3 steps.
+          Powered by our ultimate 3000+ recipes database.</b></p>
+    </div><br>
+    <div class="row">
+      <div class="col-4"></div>
+      <ol class="col-6 display-8"><b>
+          <li>Choose your recipes and save to your recipe box</li>
+          <li>Add to the Meal Planner</li>
+          <li>Get your shopping list</li>
+        </b></ol>
+    </div>
+    <form action="/recipes">
+      <div class="row">
+        <div class="col-4"></div>
+        <div class="col-4">
+          <div class="input-group mb-3">
+            <input name="q" class="form-control" placeholder="Recipe Search" aria-label="Recipe Search"
+              aria-describedby="button-addon2">
+            <button class="btn" type="button" id="button-addon2"><i class="fa fa-search"></i></button>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <div class="row">
+      <div class="col-4"></div>
+      <div class="col-4">
+        <form class="card-footer border-0" action="/recipes">
+          <input name="q" class="form-control" placeholder="Recipe Search" id="search">
+      </div>
+      <div class="col-2">
+        <button class="btn btn-default">
+          <i class="fa fa-search"></i>
+        </button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% if recipes %}
+<div class="row ">
+  {% for recipe in recipes %}
+  <div class="col-sm-7 col-md-5 col-lg-4  col-xl-3  ">
+    <div class="card border-0 mb-4">
+      <a href="/recipes/{{recipe.id}}">
+        <img src="{{ recipe.image }}" alt="Image for {{recipe.title}}" class="card-image-top img-fluid rounded"></a>
+      <a href="/recipes/{{recipe.id}}">
+        <h5 class="btn text-black text-start card-title" id=" recipe-title"><b>{{ recipe.title }}</b></h5>
+      </a>
+
+      <!-- Button trigger modal -->
+      <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal"
+        data-bs-target="#Modal{{recipe.id}}">+ Add to Planner</button>
+      <!-- Modal -->
+      <div class="modal fade" id="Modal{{recipe.id}}" tabindex="-1" aria-labelledby="ModalLabel{{recipe.id}}"
+        aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="ModalLabel{{recipe.id}}">Day of the week to save recipe to:</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form method="POST" action="/mealplanner/{{recipe.id}}/add">
+                <select name="day" class="p-1 border rounded">
+                  <option value="" disabled selected>Days of the Week</option>
+                  <option value="Sunday">Sunday</option>
+                  <option value="Monday">Monday</option>
+                  <option value="Tuesday">Tuesday</option>
+                  <option value="Wednesday">Wednesday</option>
+                  <option value="Thursday">Thursday</option>
+                  <option value="Friday">Friday</option>
+                  <option value="Saturday">Saturday</option>
+                </select>
+                <button type="submit" class="btn btn-secondary btn-sm" class="add-button">Add to Weekly Planner</button>
+              </form>
+            </div>
+            <div class="modal-footer">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
