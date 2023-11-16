@@ -31,13 +31,12 @@ class User(db.Model):
     password = db.Column(db.Text,
                          nullable=False)
     email = db.Column(db.Text, nullable=False)
-    # s_username = db.Column(db.Text)
-    # s_hash = db.Column(db.Text)
 
     recipes = db.relationship('Recipe',
                               secondary='recipe_user',
                               backref='user')
     shopping_list = db.relationship('ShoppingList', backref='user')
+    mealplan = db.relationship('MealPlan', backref='user')
 
     @classmethod
     def register(cls, username, email, first_name, last_name, password):
@@ -143,6 +142,9 @@ class Ingredient(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     original = db.Column(db.Text, nullable=False)
+    name = db.Column(db.Text)
+    amount = db.Column(db.Numeric)
+    unit = db.Column(db.Text)
     aisle = db.Column(db.Text)
     recipe_id = db.Column(db.Integer, db.ForeignKey(
         'recipes.id'), nullable=False)

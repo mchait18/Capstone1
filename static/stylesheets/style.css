@@ -1,15 +1,25 @@
-.popup-window {
-    position: fixed;
-    width: 300px;
-    height: 200px;
-    background: white;
-    border: 1px solid black;
-    padding: 10px;
-    margin: auto;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 10;
-    display: none;
-  }        
+.home-hero {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  width: 100vw;
+  left: 0;
+  z-index: -1;
+  background-image: url("/static/images/background_image.jpg");
+  background-size: cover;
+  background-position: center center;
+  color: #fff;
+  text-align: center;
+  padding: 1rem;
+  text-shadow: 0 0 8px #66757f;
+}       
+
+.ing_list {
+  column-count: 2;
+  column-gap: 2rem;
+  list-style: none;
+}

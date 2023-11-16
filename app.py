@@ -1,19 +1,27 @@
 """Flask app for Meal Planner"""
 
+import os
 from flask import Flask, render_template, request, flash, redirect, session, g
 from models import db, connect_db, User, Recipe, MealPlan, Day, Ingredient, ShoppingList
 from forms import UserAddForm, LoginForm
 from sqlalchemy.exc import IntegrityError
 import requests
 from app_secrets import API_SECRET_KEY
+import pandas as pd
+import numpy as np
+import collections
+from fractions import Fraction
 
 from flask_debugtoolbar import DebugToolbarExtension
 CURR_USER_KEY = "curr_user"
 API_BASE_URL = "https://api.spoonacular.com"
 
 app = Flask(__name__)
+if "FLASK_ENV" in os.environ:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///mealplanner-test'
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///mealplanner'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///mealplanner'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = "oh-so-secret"
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
@@ -142,7 +150,10 @@ def homepage():
 
 @app.route("/recipes")
 def recipe_search():
-    search_term = request.args["q"]
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    search_term = request.args.get("q")
     session['SEARCH_TERM'] = search_term
     res = requests.get(f"{API_BASE_URL}/recipes/complexSearch",
                        params={'query': search_term, "apiKey": API_SECRET_KEY,
@@ -200,6 +211,9 @@ def add_recipe(recipe_id):
 
         for ingredient in data["extendedIngredients"]:
             ing = Ingredient(original=ingredient["original"],
+                             name=ingredient["name"],
+                             amount=ingredient["measures"]["us"]["amount"],
+                             unit=ingredient["measures"]["us"]["unitShort"],
                              aisle=ingredient["aisle"],
                              recipe_id=recipe.id)
 
@@ -267,6 +281,7 @@ def mealplanner_add(recipe_id):
         res = requests.get(f"{API_BASE_URL}/recipes/{recipe_id}/information",
                            params={"apiKey": API_SECRET_KEY})
         data = res.json()
+
         instructions = data["instructions"] or None
         """create recipe in DB"""
         recipe = Recipe(id=data["id"],
@@ -280,6 +295,9 @@ def mealplanner_add(recipe_id):
 
         for ingredient in data["extendedIngredients"]:
             ing = Ingredient(original=ingredient["original"],
+                             name=ingredient["name"],
+                             amount=ingredient["measures"]["us"]["amount"],
+                             unit=ingredient["measures"]["us"]["unitShort"],
                              aisle=ingredient["aisle"],
                              recipe_id=recipe.id)
             db.session.add(ing)
@@ -299,6 +317,7 @@ def mealplanner_add(recipe_id):
     selected_day = request.form["day"]
 
     mealplan = MealPlan.query.filter_by(user_id=g.user.id)
+
     day_of_mealplan = Day.query.filter(
         Day.name == selected_day and Day.mealplan_id == mealplan.id).one()
     try:
@@ -352,23 +371,38 @@ def get_shopping_list():
         return redirect("/")
 
     shopping_list = ShoppingList.query.filter_by(user_id=g.user.id).one()
-    return render_template('shopping_list/detail.html', shopping_list=shopping_list.ingredients)
+    ingDicts = [{ing.name: f'{Fraction(ing.amount)} {ing.unit}'}
+                for ing in shopping_list.ingredients]
+    df = pd.DataFrame([list(attr.items())[0] for attr in ingDicts],
+                      columns=['key', 'value'])
+    compiled_df = df.drop_duplicates(
+        subset='key', keep=False).to_dict(orient="list")
+    duplicated_df = df[df.key.duplicated(keep=False)].to_dict(orient="list")
+    data = {}
+    for key, val in zip(duplicated_df['key'], duplicated_df['value']):
+        data[key] = str(data.get(key, 0)) + " + " + str(val)
 
+    ingredients = [f'{val} {key}' for val, key in zip(
+        compiled_df['value'], compiled_df['key'])]
 
-@app.route('/shopping_list', methods=["POST"])
-def update_shopping_list():
-    """Update shopping list"""
-    if not g.user:
-        flash("Access unauthorized.", "danger")
-        return redirect("/")
+    dup_ings = [f'{val[4:]} {key}' for key, val in data.items()]
 
-    shopping_list = ShoppingList.query.filter_by(user_id=g.user.id).one()
-    checked_ingredients = request.form.getlist("ingredients")
-    checked_ingredients = [int(id) for id in checked_ingredients]
-    shopping_list.ingredients = [
-        i for i in shopping_list.ingredients if i.id not in checked_ingredients]
+    return render_template('shopping_list/detail.html', ingredients=ingredients, dup_ingredients=dup_ings)
 
-    return render_template('shopping_list/detail.html', shopping_list=shopping_list.ingredients)
+# @app.route('/shopping_list', methods=["POST"])
+# def update_shopping_list():
+#     """Update shopping list"""
+#     if not g.user:
+#         flash("Access unauthorized.", "danger")
+#         return redirect("/")
+
+#     shopping_list = ShoppingList.query.filter_by(user_id=g.user.id).one()
+#     checked_ingredients = request.form.getlist("ingredients")
+#     checked_ingredients = [int(id) for id in checked_ingredients]
+#     shopping_list.ingredients = [
+#         i for i in shopping_list.ingredients if i.id not in checked_ingredients]
+
+#     return render_template('shopping_list/detail.html', shopping_list=shopping_list.ingredients)
 
 
 ##############################################################################

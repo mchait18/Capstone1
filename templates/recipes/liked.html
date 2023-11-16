@@ -1,18 +1,25 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="row justify-content-center">
-    <h3 class="col-4 mb-4 display-5"><b>Your Recipe Box</b></h3>
+
+<div class="card text-center border-0  mb-3">
+    <img src="/static/images/background_image_cropped.jpg" style="height: 8rem;" class="card-img img-fluid">
+    <div class="card-img-overlay">
+        <h3 class="col-11 mb-4 display-4">{{g.user.first_name}}'s Recipe Box</h3>
+    </div>
 </div>
+
 {% if recipes %}
 <div class="row ">
     {% for recipe in recipes %}
-    <div class="col-sm-7 col-md-5 col-lg-4  col-xl-3  ">
-        <div class="card border-0 mb-4">
+    <div class="col-sm-7 col-md-5 col-lg-4 col-xl-3">
+        <div class="card border-0" style=" height: 24rem;">
             <a href="/recipes/{{recipe.id}}">
-                <img src="{{ recipe.image }}" alt="Image for {{recipe.title}}"
-                    class="card-image-top img-fluid rounded"></a>
+                <img src="{{ recipe.image }}" alt="Image for {{recipe.title}}" class=" img-fluid rounded"
+                    style="height: 15rem;"></a>
             <a href="/recipes/{{recipe.id}}">
-                <h5 class="btn text-black text-start card-title" id=" recipe-title"><b>{{ recipe.title }}</b></h5>
+                <h5 class="btn text-black text-start card-title" style="height: 3rem;" id=" recipe-title"><b>{{
+                        recipe.title }}</b>
+                </h5>
             </a>
             <!-- Button trigger modal -->
             <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal"
@@ -23,7 +30,8 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="ModalLabel{{recipe.id}}">Day of the week to save recipe to:
+                            <h1 class="modal-title fs-5" id="ModalLabel{{recipe.id}}">Day of the week to save
+                                recipe to:
                             </h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
@@ -39,17 +47,17 @@
                                     <option value="Friday">Friday</option>
                                     <option value="Saturday">Saturday</option>
                                 </select>
-                                <button type="submit" class="btn btn-secondary btn-sm" class="add-button">Add to Weekly
+                                <button type="submit" class="btn btn-secondary btn-sm" class="add-button">Add to
+                                    Weekly
                                     Planner</button>
                             </form>
                         </div>
-                        <div class="modal-footer">
-                        </div>
+                        <div class="modal-footer"></div>
                     </div>
                 </div>
             </div>
             <div>
-                <a href="/recipes/{{recipe.id}}/remove" class="btn"><b>X Remove</b></a>
+                <a href="/recipes/{{recipe.id}}/remove" class="btn text-secondary"><b>X Remove</b></a>
             </div>
         </div>
     </div>

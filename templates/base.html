@@ -11,46 +11,92 @@
 </head>
 
 <body class="{% block body_class %}{% endblock %}">
-    <div class="container-fluid">
-        <nav class="navbar navbar-expand">
-
-            <div class="navbar-header">
-                <a href="/" class="navbar-brand">
-                    <!-- <img src="/static/images/warbler-logo.png" alt="logo"> -->
-                    <span>Recipe Search</span>
-                </a>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a href="/" class="navbar-brand">
+                <i class="fa-solid fa-kitchen-set"></i>
+                <span>Recipe Search</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navigation"
+                aria-controls="navbarToggler" aria-label="Toggle navigation" aria-expanded="false"><span
+                    class="navbar-toggler-icon border-0"></span></button>
+            <div class="collapse navbar-collapse" id="navigation">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    {% if not g.user %}
+                    <li class="nav-item"><a href="/signup" class="nav-link">Sign up</a></li>
+                    <li class="nav-item"><a href="/login" class="nav-link ">Log in</a></li>
+                    {% else %}
+                    <li class="nav-item"><button class="nav-link" type="button" data-bs-toggle="offcanvas"
+                            data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling">My Meal
+                            Planner</button></li>
+                    <li class="nav-item"><a href="/recipes/liked" class="nav-link">My Recipe Box</a></li>
+                    <li class="nav-item"><a href="/shopping_list" class="nav-link">My Shopping List</a></li>
+                    <li class="nav-item"><a href="/logout" class="nav-link">Log out</a></li>
+                    {% endif %}
+                </ul>
             </div>
-            <ul class="nav navbar-nav navbar-right">
-                <!-- {% if request.endpoint != None %}
-                <li>
-                    <form class="navbar-form navbar-right" action="">
-                        <!-- <input name="q" class="form-control" placeholder="Search" id="search">
-          <button class="btn btn-default">
-            <span class="fa fa-search"></span>
-          </button> 
-                    </form>
-                </li>
-                {% endif %} -->
-                {% if not g.user %}
-                <li><a href="/signup" class="btn ">Sign up</a></li>
-                <li><a href="/login" class="btn ">Log in</a></li>
-                {% else %}
-                <li><a href="/mealplanner" class="btn ">My Meal Planner</a></li>
-                <li><a href="/recipes/liked" class="btn ">My Recipe Box</a></li>
-                <li><a href="/shopping_list" class="btn ">My Shopping List</a></li>
-                <li><a href="/logout" class="btn">Log out</a></li>
-                {% endif %}
-            </ul>
-    </div>
+        </div>
     </nav>
     <div class="container">
         {% for category, message in get_flashed_messages(with_categories=True) %}
         <div class="alert alert-{{ category }}">{{ message }}</div>
         {% endfor %}
-
         {% block content %}
         {% endblock %}
     </div>
+    <div class="offcanvas offcanvas-end" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1"
+        id="offcanvasScrolling" aria-labelledby="offcanvasScrollingLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title display-6 text-center" id="offcanvasScrollingLabel">{{g.user.first_name}}'s
+                7-Day
+                Meal
+                Planner</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            {% if g.user %}
+            <table class="table table-striped card-text ">
+                <tbody>
+                    {% for day in g.user.mealplan[0].days %}
+                    <tr class="border-1 border-secondary">
+                        {% if day.recipes %}
+                        <td class="display-7 ">{{day.name}}</td>
+                        <td>
+                            <div id="recipes-{{day.name}}" class="row ">
+                                {% for recipe in day.recipes%}
+                                <div class="card border-0 bg-transparent col-5">
+                                    <a href="/recipes/{{recipe.id}}" class="card-link">
+                                        <img src="{{ recipe.image }}" style="width: 12rem;" style=" height: 12rem;"
+                                            alt="Image for {{recipe.title}}"
+                                            class="img-fluid img-thumbnail border-0 bg-transparent"></a>
+                                </div>
+                                <div class="card bg-transparent border-0 col-4">
+                                    <a href="/recipes/{{recipe.id}}" class="card-link">
+                                        <h6 class="btn text-black text-start card-title"><b>{{ recipe.title }}</b>
+                                        </h6>
+                                    </a>
+                                </div>
+                                <div class="card bg-transparent border-0 col-2">
+                                    <form method="POST" action="/mealplanner/{{recipe.id}}/remove" class="d-inline">
+                                        <input type="hidden" name="day-name" value={{day.name}}>
+                                        <button class="btn"><i class="fa-regular fa-circle-xmark"></i></button>
+                                    </form>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </td>
+                        {% else %}
+                        <td class="display-7 ">{{day.name}}</td>
+                        <td class="bg-light"></td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+    </div>
+
     <script src="https://unpkg.com/jquery"></script>
     <script src="https://unpkg.com/popper"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"

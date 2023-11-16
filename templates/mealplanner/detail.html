@@ -2,34 +2,55 @@
 {% block title %}Meal Planner{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1 class="display-2">Your 7-Day Meal Planner</h1>
-    <table class="table table-striped ">
-        <tbody>
-            {% for day in mpDays %}
-            <tr>
-                <td>{{day.name}}</td>
-                {% if day.recipes %}
-                <td>
-                    <div id="recipes-" {{day.name}}>
-                        {% for recipe in day.recipes%}
-                        <a href="/recipes/{{recipe.id}}" class="card-link">
-                            <img src="{{ recipe.image }}" alt="Image for {{recipe.title}}" class="card-image">
-                            <h6 class="link-secondary">{{ recipe.title }}</h6>
-                        </a>
-                        <div>
-                            <form method="POST" action="/mealplanner/{{recipe.id}}/remove">
-                                <input type="hidden" name="day-name" value={{day.name}}>
-                                <button class="btn-default">X Remove</button>
-                            </form>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </td>
-                {% endif %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
 
-    {% endblock %}
+<div class="row justify-content-center">
+    <div class="card text-center border-0  mb-3">
+        <img src="/static/images/background_image_cropped.jpg" style="height: 8rem;" class="card-img img-fluid">
+        <div class="card-img-overlay">
+            <h3 class="col-11 mb-4 display-4">{{g.user.first_name}}'s 7-Day Meal Planner</h3>
+        </div>
+    </div>
+
+    <div class="card col-11 col-md-8 col-lg-6 col-xl-5 border-0">
+        <table class="table table-striped card-text ">
+            <tbody>
+                {% for day in mpDays %}
+                <tr class="border-1 border-secondary">
+                    {% if day.recipes %}
+                    <td class="display-7 col-3 col-lg-2 col-lg-1">{{day.name}}</td>
+                    <td>
+                        <div id="recipes-{{day.name}}" class="row ">
+                            {% for recipe in day.recipes%}
+                            <div class="card border-0 bg-transparent col-5 col-lg-4">
+                                <a href="/recipes/{{recipe.id}}" class="card-link">
+                                    <img src="{{ recipe.image }}" style="width: 12rem;" style=" height: 12rem;"
+                                        alt="Image for {{recipe.title}}"
+                                        class="img-fluid img-thumbnail border-0 bg-transparent"> </a>
+                            </div>
+                            <div class="card bg-transparent border-0 col-5 col-lg-6">
+                                <a href="/recipes/{{recipe.id}}" class="card-link">
+                                    <h6 class="btn text-black text-start card-title"><b>{{ recipe.title }}</b>
+                                    </h6>
+                                </a>
+                            </div>
+                            <div class="card bg-transparent border-0 col-2 col-lg-1">
+                                <form method="POST" action="/mealplanner/{{recipe.id}}/remove" class="d-inline">
+                                    <input type="hidden" name="day-name" value={{day.name}}>
+                                    <button class="btn"><i class="fa-regular fa-circle-xmark"></i></button>
+                                </form>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </td>
+                    {% else %}
+                    <td class="display-7 ">{{day.name}}</td>
+                    <td class="bg-light"></td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
