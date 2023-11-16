@@ -66,13 +66,25 @@ class SLViewTestCase(TestCase):
         self.recipe1 = recipe1
         self.recid1 = recid1
 
+        mp = MealPlan(user_id=self.testuser_id)
+        mpid = 2222
+        mp.id = mpid
+
+        mp.days.append(Day(name="Sunday", mealplan_id=mp.id))
+        mp.days.append(Day(name="Monday", mealplan_id=mp.id))
+        mp.days.append(Day(name="Tuesday", mealplan_id=mp.id))
+        mp.days.append(Day(name="Wednesday", mealplan_id=mp.id))
+        mp.days.append(Day(name="Thursday", mealplan_id=mp.id))
+        mp.days.append(Day(name="Friday", mealplan_id=mp.id))
+        mp.days.append(Day(name="Saturday", mealplan_id=mp.id))
+
         shopping_list = ShoppingList(user_id=self.testuser_id)
 
         self.shopping_list = shopping_list
 
         ing1 = Ingredient(original="Test1", recipe_id=self.recid1)
         ing2 = Ingredient(original="Test2", recipe_id=self.recid1)
-        db.session.add_all([shopping_list, ing1, ing2])
+        db.session.add_all([mp, shopping_list, ing1, ing2])
 
         self.ing1 = ing1
         self.ing2 = ing2

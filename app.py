@@ -319,7 +319,8 @@ def mealplanner_add(recipe_id):
     mealplan = MealPlan.query.filter_by(user_id=g.user.id)
 
     day_of_mealplan = Day.query.filter(
-        Day.name == selected_day and Day.mealplan_id == mealplan.id).one()
+        Day.name == selected_day, Day.mealplan_id == mealplan[0].id).one()
+
     try:
         day_of_mealplan.recipes.append(recipe)
         db.session.commit()
@@ -352,7 +353,7 @@ def mealplanner_remove(recipe_id):
 
     mealplan = MealPlan.query.filter_by(user_id=g.user.id)
     day_of_mealplan = Day.query.filter(
-        Day.name == selected_day and Day.mealplan_id == mealplan.id).one()
+        Day.name == selected_day, Day.mealplan_id == mealplan[0].id).one()
     day_of_mealplan.recipes = [
         r for r in day_of_mealplan.recipes if not r == recipe]
     db.session.commit()
