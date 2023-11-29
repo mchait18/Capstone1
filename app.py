@@ -1,18 +1,20 @@
 """Flask app for Meal Planner"""
-
-import os
-from flask import Flask, render_template, request, flash, redirect, session, g
-from models import db, connect_db, User, Recipe, MealPlan, Day, Ingredient, ShoppingList
-from forms import UserAddForm, LoginForm
-from sqlalchemy.exc import IntegrityError
-import requests
-from app_secrets import API_SECRET_KEY
-import pandas as pd
-import numpy as np
-import collections
-from fractions import Fraction
-
 from flask_debugtoolbar import DebugToolbarExtension
+from fractions import Fraction
+import collections
+import numpy as np
+import pandas as pd
+import requests
+from sqlalchemy.exc import IntegrityError
+from forms import UserAddForm, LoginForm
+from models import db, connect_db, User, Recipe, MealPlan, Day, Ingredient, ShoppingList
+from flask import Flask, render_template, request, flash, redirect, session, g
+import os
+from dotenv import load_dotenv
+load_dotenv()
+# from app_secrets import API_SECRET_KEY
+API_SECRET_KEY = os.environ.get('API_SECRET_KEY')
+
 CURR_USER_KEY = "curr_user"
 API_BASE_URL = "https://api.spoonacular.com"
 
