@@ -5,3 +5,4 @@ Once a meal is added to the mealplanner, there is a shopping list that is popula
 The user signs up to the website and once he's registered, he can search for recipes, add/delete them to/from a recipe box and mealplanner and the shopping list will update accordingly, based on the recipes in his mealplanner.
 The user can then pull up his shopping list checklist to check off which ingredients he has already to know what he needs to buy.
 I used Python with FLASK and SQLAlchemy, HTML, CSS and bootstrap
+The unittest coverage for this project is 90%
