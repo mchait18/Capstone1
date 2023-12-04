@@ -22,7 +22,7 @@ app = Flask(__name__)
 if "FLASK_ENV" in os.environ:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///mealplanner-test'
 else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///mealplanner'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://ebyppwps:st3iL8cjA72C7jv6pND1qDs3GbTI-lPK@bubble.db.elephantsql.com/ebyppwps'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = "oh-so-secret"
